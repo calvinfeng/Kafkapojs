@@ -12,4 +12,4 @@ socket.on('message', (msg) => {
 
 setInterval(() => {
   socket.send("Hello world!!!");
-}, 1000)
+}, 1000);
