@@ -1,4 +1,4 @@
 .DS_Store
 node_modules/
-public/*.map
-public/*.js
+index.bundle.js.map
+index.bundle.js
