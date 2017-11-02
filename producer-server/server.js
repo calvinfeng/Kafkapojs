@@ -9,7 +9,10 @@ const myClient = new Client('localhost:2181');
 
 myClient.once('connect', () => {
   myClient.loadMetadataForTopics([], (err, results) => {
-    results.forEach((result) => logger.loginfo(result));
+    if (results) {
+      const metadata = results[1].metadata; // Usually the second one is the metadata about topics
+      logger.loginfo(`Available Kafka topics: [${Object.keys(metadata)}]`);
+    }
   });
 });
 
@@ -60,7 +63,7 @@ function createMessageHandler(socket) {
         const msg = data.message;
         Object.keys(msg).forEach((partition) => {
           const offset = msg[partition];
-          logger.loginfo(`committed message on topic: ${topic}, partition:${partition}, offset:${offset}`);
+          logger.loginfo(`Committed message on topic: ${topic}, partition:${partition}, offset:${offset}`);
         });
       }
     });
@@ -68,10 +71,10 @@ function createMessageHandler(socket) {
 }
 
 io.on('connection', (client) => {
-  logger.loginfo(`client ${client.id} is connected`);
+  logger.loginfo(`Client ${client.id} is connected.`);
   
   client.on('disconnect', () => {
-    logger.logwarn(`${client.id} has disconnected`);
+    logger.logwarn(`Client ${client.id} has disconnected.`);
   });
   
   client.on('message', createMessageHandler(client));
@@ -79,5 +82,5 @@ io.on('connection', (client) => {
 
 
 httpServer.listen(8000, () => {
-  logger.loginfo("serving and listening on 8000")
+  logger.loginfo("HTTP server is serving and listening on 8000")
 });

@@ -3,19 +3,19 @@ const colors = require('colors');
 class Logger {
   static logerr(msg) {
     const now = new Date().toString();
-    const fmtString = `[Producer][ERROR][${now}]`;
+    const fmtString = `[Consumer][ERROR][${now}]`;
     console.log(fmtString.red, msg);  
   }
   
   static loginfo(msg) {
     const now = new Date().toString();
-    const fmtString = `[Producer][INFO][${now}]`;
+    const fmtString = `[Consumer][INFO][${now}]`;
     console.log(fmtString.green, msg);    
   }
   
   static logwarn(msg) {
     const now = new Date().toString();
-    const fmtString = `[Producer][WARN][${now}]`;
+    const fmtString = `[Consumer][WARN][${now}]`;
     console.log(fmtString.yellow, msg);
   }
 }
