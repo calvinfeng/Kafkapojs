@@ -29,8 +29,6 @@ const KafkaClients = {};
 io.on('connection', (client) => {
   logger.loginfo(`Client ${client.id} is connected.`);
 
-  io.emit('message', "Welcome to Consumer Server!!!");
-
   KafkaClients[client.id] = new Client('localhost:2181', client.id);
 
   const payloads = [
@@ -43,8 +41,8 @@ io.on('connection', (client) => {
 
   const consumer = new Consumer(KafkaClients[client.id], payloads, options);
 
-  consumer.on('message', function (message) {
-    console.log(message);
+  consumer.on('message', function (kafkaMessage) {
+    io.emit('message', JSON.stringify(kafkaMessage));
   });
 });
 

@@ -1,11 +1,14 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import io from 'socket.io-client';
-import randomSentence from 'random-sentence';
+import uuidv1 from 'uuid/v1';
+import Message from './message';
+
 
 class Application extends React.Component {
   state = {
-    connected: false
+    connected: false,
+    kafkaMessages: []
   };
 
   handleConnect = () => {
@@ -13,7 +16,10 @@ class Application extends React.Component {
   };
 
   handleMessage = (msg) => {
-    this.setState({ downstreamMessage: msg });
+    const msgJSON = JSON.parse(msg);
+    setTimeout(() => {
+      this.setState({ kafkaMessages: this.state.kafkaMessages.concat([msgJSON]) });
+    }, 50);
   };
 
   componentDidMount() {
@@ -30,12 +36,10 @@ class Application extends React.Component {
     return <p>Connecting...</p>;
   }
 
-  get downstreamMessage() {
-    if (this.state.downstreamMessage) {
-      return <p>{this.state.downstreamMessage}</p>;
-    }
-
-    return <p>No message yet</p>;
+  get kafkaMessages() {
+    return this.state.kafkaMessages.map((msg) => {
+      return <Message key={uuidv1()} topic={msg.topic} partition={msg.partition} value={msg.value} />;
+    });
   }
 
   get upstreamMessage() {
@@ -49,14 +53,14 @@ class Application extends React.Component {
   render() {
     return (
       <div>
-        <h1>Producer</h1>
+        <h1>Consumer</h1>
         {this.connectionState}
-        {this.downstreamMessage}
+        {this.kafkaMessages}
       </div>
     );
   }
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-    ReactDOM.render(<Application />, document.getElementById('react-application'));
+document.addEventListener('DOMContentLoaded', () => {
+  ReactDOM.render(<Application />, document.getElementById('react-application'));
 });
