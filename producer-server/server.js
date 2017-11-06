@@ -35,7 +35,7 @@ const app = express();
 const httpServer = require('http').createServer(app);
 
 // Routers
-app.use(express.static('public'))
+app.use(express.static('public'));
 app.get('/', (req, res, next) => {
     res.sendFile(__dirname + '/public/index.html');
 });
@@ -46,41 +46,43 @@ const io = require('socket.io')(httpServer);
 function createMessageHandler(socket) {
   return (msg) => {
     io.emit('message', msg);
-    
+
     const topic = 'message';
-    
+
     const payload = {
       topic: 'message',
-      messages: msg, 
+      messages: msg,
       timestamp: Date.now(),
       partition: Math.floor(Math.random() * 3)
-    }
-    
+    };
+
     myProducer.send([payload], (err, data) => {
       if (err) logger.logerr(`${err.constructor.name}: ${err.message}`);
-      
+
       if (data) {
-        const msg = data.message;
-        Object.keys(msg).forEach((partition) => {
-          const offset = msg[partition];
-          logger.loginfo(`Committed message on topic: ${topic}, partition:${partition}, offset:${offset}`);
+        const dataMsg = data.message;
+        Object.keys(dataMsg).forEach((partition) => {
+          const offset = dataMsg[partition];
+          logger.loginfo(
+            `Committed message on topic: ${topic}, partition:${partition}, offset:${offset}`
+          );
         });
       }
     });
-  }
+  };
 }
 
 io.on('connection', (client) => {
   logger.loginfo(`Client ${client.id} is connected.`);
-  
+
   client.on('disconnect', () => {
     logger.logwarn(`Client ${client.id} has disconnected.`);
   });
-  
+
   client.on('message', createMessageHandler(client));
 });
 
 
 httpServer.listen(8000, () => {
-  logger.loginfo("HTTP server is serving and listening on 8000")
+  logger.loginfo("HTTP server is serving and listening on 8000");
 });

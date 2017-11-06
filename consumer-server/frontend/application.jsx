@@ -16,19 +16,10 @@ class Application extends React.Component {
     this.setState({ downstreamMessage: msg });
   };
 
-  handleSend = (msg) => {
-    this.socket.send(msg);
-    this.setState({ upstreamMessage: msg });
-  }
-
   componentDidMount() {
-    this.socket = io(`${window.location.hostname}:8000`);
+    this.socket = io(`${window.location.hostname}:3000`);
     this.socket.on('connect', this.handleConnect);
     this.socket.on('message', this.handleMessage);
-
-    setInterval(() => {
-      this.handleSend(randomSentence({ min: 5, max: 10 }));
-    }, 1000);
   }
 
   get connectionState() {
