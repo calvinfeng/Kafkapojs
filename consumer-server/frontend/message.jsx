@@ -9,7 +9,7 @@ const Message = (props) => (
   </div>
 );
 
-Message.PropTypes = {
+Message.propTypes = {
   topic: PropTypes.string.isRequired,
   partition: PropTypes.string.isRequired,
   value: PropTypes.string.isRequired
